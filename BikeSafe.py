@@ -134,10 +134,10 @@ col1, col2, col3 = st.columns([1,2,1])
 with col2:
     st.markdown("""
     <div class='button-container'>
-        <a href='https://streamlit.io/gallery' target='_blank' class='button'>
+        <a href='https://bikesafe.streamlit.app/Safe_Bike_Lanes' target='_blank' class='button'>
             <div class='button-icon'>🚴🏼‍♂️</div> Discover Routes
         </a>
-        <a href='https://streamlit.io/gallery' target='_blank' class='button'>
+        <a href='https://bikesafe.streamlit.app/Accident_Statistics' target='_blank' class='button'>
             <div class='button-icon'>📊</div> Accident Statistics
         </a>
     </div>
