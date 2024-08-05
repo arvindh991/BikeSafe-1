@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 3. Run the app
 ```
-streamlit run "Bike Safe.py"
+streamlit run BikeSafe.py
 ```
 
 
