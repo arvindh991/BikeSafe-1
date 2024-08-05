@@ -1,0 +1,11 @@
+geopy
+ipykernel
+nbformat
+openpyxl
+plotly
+pyogrio
+scikit-learn
+streamlit
+streamlit-date-picker
+streamlit-folium
+osmnx
