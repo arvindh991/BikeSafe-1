@@ -101,7 +101,7 @@ st.markdown("<h1 class='main-header'>Less Waste, Less Waist, Go Safe</h1>", unsa
 col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown("""
-    <div class='stat-box center-text'><h3>500+</h3>Accident Reports</div>
+    <div class='stat-box center-text'><h3>500-</h3>Accident Reports</div>
     <div class='hidden-content'>
         <p>Cycling deaths are slowly declining in Australia, but fatalities involving single riders and older people are on the rise.
 
@@ -110,7 +110,7 @@ Analysis of the 1294 cyclist fatalities recorded in Australia over the last thre
     """, unsafe_allow_html=True)
 with col2:
     st.markdown("""
-    <div class='stat-box center-text'><h3>200 km</h3>Safe Bike Lanes</div>
+    <div class='stat-box center-text'><h3>Health <3</h3>Environment Friendly</div>
     <div class='hidden-content'>
         <p>By choosing biking as your main transportation method, you not only contribute to reducing pollution but you’re also helping improve the air quality in your neighborhood. Moreover, many researchers have studied the relationship between exercise and cancer, especially colon and breast cancer. Research has shown that if you cycle, the chance of bowel cancer is reduced. Some evidence suggests that regular cycling reduces the risk of breast cancer.
         .</p>
@@ -118,7 +118,7 @@ with col2:
     """, unsafe_allow_html=True)
 with col3:
     st.markdown("""
-    <div class='stat-box center-text'><h3>50+</h3>Community Routes</div>
+    <div class='stat-box center-text'><h3>200+</h3>Community Routes</div>
     <div class='hidden-content'>
         <p>The City of Melbourne’s cycling network has over 135 km of on and off road routes.
         Melbourne boasts over 200 km of dedicated bike lanes, providing safe routes for cyclists throughout the city.</p>
