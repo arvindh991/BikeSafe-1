@@ -1,147 +1,161 @@
 import streamlit as st
-from PIL import Image
 
 # Set page configuration
-st.set_page_config(page_title="BikeSafe Melbourne", page_icon="🚲", layout="wide")
+st.set_page_config(page_title="BikeSafe Melbourne", page_icon="🚲", layout="wide", initial_sidebar_state="collapsed")
 
-# Custom CSS to style the page and buttons
+# Custom CSS for styling
 st.markdown("""
 <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
     .stApp {
-        background-image: url('https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1740&auto=format&fit=crop');
-        background-size: cover;
+        background-color: #1E1E1E;
+        color: #FFFFFF;
     }
-    .main-header, .sub-header {
-        color: white;
-        font-weight: bold;
-        text-align: center;
-        padding: 2rem 0;
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
         background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 15px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-        font-family: 'Arial Black', Gadget, sans-serif;
+        backdrop-filter: blur(10px);
     }
-    .main-header {
-        font-size: 3.5rem;
+    .navbar-brand {
+        color: #FFFFFF;
+        font-size: 1.5rem;
+        font-weight: bold;
     }
-    .sub-header {
+    .navbar-links a {
+        color: #FFFFFF;
+        text-decoration: none;
+        margin-left: 1rem;
+    }
+    .hero-container {
+        position: relative;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        margin-top: -80px;  /* Adjust this value based on your navbar height */
+    }
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .hero-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #FFFFFF;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    .hero-title {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #FFFFFF;
+
+    }
+    .hero-subtitle {
         font-size: 1.5rem;
     }
-    .stat-box {
-        background-color: #F0F0F0;
-        padding: 1rem;
-        border-radius: 10px;
-        margin: 0.5rem;
-        cursor: pointer;
+    .main-content {
+        padding: 2rem;
     }
-    .center-text {
-        text-align: center;
+    .section-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #007BFF;
+        margin-bottom: 1rem;
     }
-    .button-container {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 20px;
+    .section-content {
+        color: #FFFFFF;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
     }
-    .button {
-        background-color: #F0F0F0;
-        border: 2px solid #CCCCCC;
-        color: #333333;
-        padding: 15px 32px;
-        text-align: left;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        font-size: 18px;
-        cursor: pointer;
-        border-radius: 30px;
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        font-family: 'Arial Black', Gadget, sans-serif;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        width: 300px;
-    }
-    .button:hover {
-        background-color: #E0E0E0;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-    .button-icon {
+    .stButton>button {
         background-color: #007BFF;
-        color: white;
-        border-radius: 50%;
-        padding: 10px;
-        margin-right: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 50px;
-        height: 50px;
-    }
-    .hidden-content {
-        display: none;
-        background-color: rgba(255, 255, 255, 0.9);
-        padding: 1rem;
-        border-radius: 10px;
-        margin-top: 0.5rem;
-    }
-    .stat-box:hover + .hidden-content {
-        display: block;
+        color: #FFFFFF;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Navigation bar
-col1, col2, col3, col4, col5 = st.columns([2,1,1,1,1])
+st.markdown("""
+<div class="navbar">
+    <div class="navbar-brand">BikeSafe</div>
+    <div class="navbar-links">
+        <a href="#">Discover Routes</a>
+        <a href="#">Accident Statistics</a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Hero section
+st.markdown("""
+<div class="hero-container">
+    <img src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1740&auto=format&fit=crop" class="hero-image" alt="Cyclists riding">
+    <div class="hero-text">
+        <h1 class="hero-title">Every Ride Counts. Safety Matters.</h1>
+        <p class="hero-subtitle">Discover essential safety insights for cyclists, helping you navigate the roads confidently and securely. Ride smart, stay safe.</p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Main content
+st.markdown('<div class="main-content">', unsafe_allow_html=True)
+
+# Safe bike lanes section
+col1, col2 = st.columns(2)
 with col1:
-    st.image("https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png", width=150)
+    st.image("C:/Users/shafa/Alchemist/BikeSafe/media/bike tracks.jpeg", use_column_width=True)
+with col2:
+    st.markdown("<h2 class='section-title'>Discover Safer Bike Lanes</h2>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class='section-content'>
+        Discover Melbourne's extensive network of safe bike lanes. Our app provides:
+        <ul>
+            <li>Up-to-date information on dedicated cycling paths</li>
+            <li>Shared lanes and low-traffic routes</li>
+            <li>Real-time updates on road conditions</li>
+            <li>Community-reported hazards and tips</li>
+            <li>Integration with traffic signals for safer rides</li>
+        </ul>
+        Ensure a safe and enjoyable ride every time with BikeSafe Melbourne.
+    </div>
+    """, unsafe_allow_html=True)
+    st.button("Explore Safe Routes")
 
-# Main header
-st.markdown("<h1 class='main-header'>Less Waste, Less Waist, Go Safe</h1>", unsafe_allow_html=True)
-
-# Statistics at the top with expandable content
-col1, col2, col3 = st.columns(3)
+# Accident Statistics section
+col1, col2 = st.columns(2)
 with col1:
+    st.markdown("<h2 class='section-title'>Accident Statistics</h2>", unsafe_allow_html=True)
     st.markdown("""
-    <div class='stat-box center-text'><h3>500-</h3>Accident Reports</div>
-    <div class='hidden-content'>
-        <p>Cycling deaths are slowly declining in Australia, but fatalities involving single riders and older people are on the rise.
-
-Analysis of the 1294 cyclist fatalities recorded in Australia over the last three decades shows cycling deaths slightly decreased overall by an average of 1.1 per cent annually. However, fatalities in those aged 60 years and over increased by 3.3 per cent annually over the same period. .</p>
+    <div class='section-content'>
+        Stay informed about cycling safety in Melbourne. Our comprehensive statistics include:
+        <ul>
+            <li>Historical accident data and trends</li>
+            <li>Interactive heatmaps of high-risk areas</li>
+            <li>Time-based analysis of accident occurrences</li>
+            <li>Detailed reports on accident types and causes</li>
+            <li>Safety improvement suggestions based on data analysis</li>
+        </ul>
+        Make informed decisions about your routes and stay safe on the roads with BikeSafe Melbourne.
     </div>
     """, unsafe_allow_html=True)
+    st.button("View statistics")
 with col2:
-    st.markdown("""
-    <div class='stat-box center-text'><h3>Health <3</h3>Environment Friendly</div>
-    <div class='hidden-content'>
-        <p>By choosing biking as your main transportation method, you not only contribute to reducing pollution but you’re also helping improve the air quality in your neighborhood. Moreover, many researchers have studied the relationship between exercise and cancer, especially colon and breast cancer. Research has shown that if you cycle, the chance of bowel cancer is reduced. Some evidence suggests that regular cycling reduces the risk of breast cancer.
-        .</p>
-    </div>
-    """, unsafe_allow_html=True)
-with col3:
-    st.markdown("""
-    <div class='stat-box center-text'><h3>200+</h3>Community Routes</div>
-    <div class='hidden-content'>
-        <p>The City of Melbourne’s cycling network has over 135 km of on and off road routes.
-        Melbourne boasts over 200 km of dedicated bike lanes, providing safe routes for cyclists throughout the city.</p>
-    </div></p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.image("https://images.unsplash.com/photo-1599939571322-792a326991f2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80", use_column_width=True)
 
-# Welcome message
-st.markdown("<div class='sub-header'><strong>Welcome!</strong> BikeSafe Melbourne is your ultimate companion for cycling through the vibrant streets and welcoming architecture.</div>", unsafe_allow_html=True)
-
-# Centered buttons with links
-col1, col2, col3 = st.columns([1,2,1])
-with col2:
-    st.markdown("""
-    <div class='button-container'>
-        <a href='https://bikesafe.streamlit.app/Safe_Bike_Lanes' target='_blank' class='button'>
-            <div class='button-icon'>🚴🏼‍♂️</div> Discover Routes
-        </a>
-        <a href='https://bikesafe.streamlit.app/Accident_Statistics' target='_blank' class='button'>
-            <div class='button-icon'>📊</div> Accident Statistics
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
-st.markdown("<div class='center-text' style='position: fixed; bottom: 0; width: 100%; background-color: rgba(255,255,255,0.8); padding: 10px;'>© 2024 BikeSafe Melbourne. Ride smart, ride safe!</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: #FFFFFF; padding: 1rem; margin-top: 2rem;'>© 2024 BikeSafe Melbourne. Ride smart, ride safe!</div>", unsafe_allow_html=True)

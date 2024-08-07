@@ -2,58 +2,157 @@ import json
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-from datetime import datetime, timedelta
-from streamlit_date_picker import date_range_picker, PickerType
+import folium
+from streamlit_folium import folium_static
+from datetime import datetime
+from branca.colormap import LinearColormap
+
+st.set_page_config(layout="wide", page_title="Melbourne Traffic Accidents")
+
+# Custom CSS for layout improvements
+st.markdown("""
+<style>
+.reportview-container .main .block-container {
+    padding-top: 2rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    padding-bottom: 2rem;
+}
+.stSlider {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.title("Melbourne Traffic Accidents")
 
-map_json = "data/melbourne.geojson"
+# Load data
+map_json = "C:/Users/shafa/Alchemist/BikeSafe/data/melbourne.geojson"
 regions_geojson = json.load(open(map_json))
+accidents_data = pd.read_parquet("C:/Users/shafa/Alchemist/BikeSafe/data/accidents_data.parquet")
 
-accidents_data = pd.read_parquet("data/accidents_data.parquet")
-accidents_data_extract = accidents_data.copy()
-default_start, default_end = datetime.strptime('2012-01-01', "%Y-%m-%d"), datetime.now()
-date_range_string = date_range_picker(picker_type=PickerType.date,
-                                      start=default_start, end=default_end,
-                                      key='date_range_picker',
-                                      )
-if date_range_string:
-    start, end = date_range_string
-    st.write(f"Date Range Picker [{start}, {end}]")
+# Date slider
+min_date = accidents_data['ACCIDENT_DATE'].min().date()
+max_date = accidents_data['ACCIDENT_DATE'].max().date()
+col1, col2, col3 = st.columns([1, 3, 1])
+with col2:
+    start_date, end_date = st.slider(
+        "Select date range",
+        min_value=min_date,
+        max_value=max_date,
+        value=(min_date, max_date)
+    )
 
-    #convert start to date
-    start_date = pd.Timestamp(datetime.strptime(start, "%Y-%m-%d").date())
-    end_date = pd.Timestamp(datetime.strptime(end, "%Y-%m-%d").date())
-    accidents_data_extract = accidents_data[(accidents_data["ACCIDENT_DATE"] >= start_date) & (accidents_data["ACCIDENT_DATE"] < end_date)]
+# Filter data based on date range
+accidents_data_extract = accidents_data[
+    (accidents_data['ACCIDENT_DATE'].dt.date >= start_date) & 
+    (accidents_data['ACCIDENT_DATE'].dt.date <= end_date)
+]
 
-
+# Prepare data for choropleth
 accidents_count = accidents_data_extract.groupby("name").size().reset_index(name="accidents_count")
-accidents_count.sort_values("accidents_count", ascending=False, inplace=True)
 
-fig = px.choropleth(
-    data_frame = accidents_count,
-    geojson=regions_geojson,
-    locations="name",
-    featureidkey="properties.name",
-    color="accidents_count",
-)
-fig.update_geos(fitbounds="locations", visible=False)
-fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+# Create base map
+m = folium.Map(location=[-37.8136, 144.9631], zoom_start=13)
 
-event = st.plotly_chart(fig, theme=None, on_select="rerun", selection_mode="points")
+# Create a colormap
+colormap = LinearColormap(colors=['#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026'], 
+                          vmin=accidents_count['accidents_count'].min(), 
+                          vmax=accidents_count['accidents_count'].max())
 
-try: 
-    region_selected = event["selection"]["points"][0]["location"] if event else None
-except IndexError:
-    region_selected = None
+# Add choropleth layer
+folium.Choropleth(
+    geo_data=regions_geojson,
+    name='Accidents',
+    data=accidents_count,
+    columns=['name', 'accidents_count'],
+    key_on='feature.properties.name',
+    fill_color='YlOrRd',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    legend_name='Number of Accidents'
+).add_to(m)
 
-if region_selected:
-    accidents_data_region = accidents_data_extract[accidents_data_extract["name"] == region_selected]
+# Add hover functionality
+folium.GeoJson(
+    regions_geojson,
+    style_function=lambda feature: {
+        'fillColor': 'transparent',
+        'color': 'black',
+        'weight': 2,
+        'fillOpacity': 0.7,
+    },
+    tooltip=folium.GeoJsonTooltip(
+        fields=['name'],
+        aliases=['Region:'],
+        style=("background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;")
+    )
+).add_to(m)
 
-    causes = accidents_data_region["CAUSE"].value_counts()
-    cause_list = causes.index.tolist()
-    causes_selected = st.multiselect("Select causes", cause_list, default=cause_list)
-    accidents_data_region_causes = accidents_data_region[accidents_data_region["CAUSE"].isin(causes_selected)]
-    accidents_data_region_severity = accidents_data_region_causes["SEVERITY"].value_counts().reset_index(name="Counts")
-    fig_severity = px.bar(accidents_data_region_severity, x="SEVERITY", y="Counts")
-    st.plotly_chart(fig_severity, theme=None)
+# Layout
+col1, col2 = st.columns([1, 3])
+
+with col1:
+    st.subheader("About This Visualization")
+    st.write("""
+    This interactive map visualizes traffic accidents in Melbourne, Australia. 
+    The color intensity represents the number of accidents in each region, with darker colors indicating a higher number of incidents.
+    
+    Use the date slider above to filter accidents within a specific time range.
+    
+    Click on a region to view detailed accident statistics for that area.
+    """)
+    
+    st.subheader("Instructions")
+    st.write("""
+    1. Adjust the date range using the slider above the map.
+    2. Hover over regions to see their names.
+    3. Click on a region to view its accident statistics.
+    4. Use the zoom controls on the map to focus on specific areas.
+    """)
+    
+    # Placeholder for region-specific information
+    st.subheader("Region Statistics")
+    region_stats = st.empty()
+
+with col2:
+    map_data = folium_static(m, width=1500, height=800)
+
+# Handle map clicks
+if 'last_clicked' not in st.session_state:
+    st.session_state.last_clicked = None
+
+clicked_region = None
+for feature in regions_geojson['features']:
+    if feature['properties']['name'] == st.session_state.last_clicked:
+        clicked_region = feature['properties']['name']
+        break
+
+if clicked_region:
+    accidents_data_region = accidents_data_extract[accidents_data_extract["name"] == clicked_region]
+    
+    with region_stats.container():
+        st.write(f"Selected region: {clicked_region}")
+        
+        causes = accidents_data_region["CAUSE"].value_counts()
+        cause_list = causes.index.tolist()
+        causes_selected = st.multiselect("Select causes", cause_list, default=cause_list[:5])
+        
+        accidents_data_region_causes = accidents_data_region[accidents_data_region["CAUSE"].isin(causes_selected)]
+        accidents_data_region_severity = accidents_data_region_causes["SEVERITY"].value_counts().reset_index(name="Counts")
+        
+        fig_severity = px.bar(accidents_data_region_severity, x="SEVERITY", y="Counts", 
+                              title=f"Accident Severity in {clicked_region}",
+                              color_discrete_sequence=["#FFA07A"])
+        st.plotly_chart(fig_severity, use_container_width=True)
+else:
+    with region_stats.container():
+        st.write("Click on a region to view its accident statistics.")
+
+# Update last_clicked in session state
+if map_data['last_clicked'] is not None:
+    st.session_state.last_clicked = map_data['last_clicked']['properties']['name']
+
+# Legend
+colormap.add_to(m)
