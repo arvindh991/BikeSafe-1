@@ -54,18 +54,26 @@ st.markdown("""
         left: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
-        color: #FFFFFF;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    .hero-title-box {
+        background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent box for title */
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    .hero-subtitle-box {
+        background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent box for subtitle */
+        padding: 15px;
+        border-radius: 10px;
     }
     .hero-title {
         font-size: 3rem;
         font-weight: bold;
-        margin-bottom: 1rem;
-        color: #FFFFFF;
-
+        color: #f2e8cf;
     }
     .hero-subtitle {
         font-size: 1.5rem;
+        color: f2e8cf;
     }
     .main-content {
         padding: 2rem;
@@ -104,8 +112,12 @@ st.markdown("""
 <div class="hero-container">
     <img src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1740&auto=format&fit=crop" class="hero-image" alt="Cyclists riding">
     <div class="hero-text">
-        <h1 class="hero-title">Every Ride Counts. Safety Matters.</h1>
-        <p class="hero-subtitle">Discover essential safety insights for cyclists, helping you navigate the roads confidently and securely. Ride smart, stay safe.</p>
+        <div class="hero-title-box">
+            <h1 class="hero-title">Every Ride Counts. Safety Matters.</h1>
+        </div>
+        <div class="hero-subtitle-box">
+            <p class="hero-subtitle">Discover essential safety insights for cyclists, helping you navigate the roads confidently and securely. Ride smart, stay safe.</p>
+        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -153,7 +165,7 @@ with col1:
     """, unsafe_allow_html=True)
     st.button("View statistics")
 with col2:
-    st.image("https://images.unsplash.com/photo-1599939571322-792a326991f2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80", use_column_width=True)
+    st.image("	https://pbs.twimg.com/media/De69pPpUYAAFMrh?format=jpg&name=900x900", use_column_width=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
