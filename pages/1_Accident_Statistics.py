@@ -3,9 +3,11 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import folium
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium
 from datetime import datetime
 from branca.colormap import LinearColormap
+from shapely.geometry import Point
+import geopandas as gpd
 
 st.set_page_config(layout="wide", page_title="Melbourne Traffic Accidents")
 
@@ -28,9 +30,10 @@ st.markdown("""
 st.title("Melbourne Traffic Accidents")
 
 # Load data
-map_json = "C:/Users/shafa/Alchemist/BikeSafe/data/melbourne.geojson"
+map_json = "data/melbourne.geojson"
 regions_geojson = json.load(open(map_json))
-accidents_data = pd.read_parquet("C:/Users/shafa/Alchemist/BikeSafe/data/accidents_data.parquet")
+regions = gpd.read_file(map_json)
+accidents_data = pd.read_parquet("data/accidents_data.parquet")
 
 # Date slider
 min_date = accidents_data['ACCIDENT_DATE'].min().date()
@@ -117,17 +120,23 @@ with col1:
     region_stats = st.empty()
 
 with col2:
-    map_data = folium_static(m, width=1500, height=800)
+    map_data = st_folium(m, width=1500, height=800)
+
+# Legend
+colormap.add_to(m)
 
 # Handle map clicks
-if 'last_clicked' not in st.session_state:
-    st.session_state.last_clicked = None
-
 clicked_region = None
-for feature in regions_geojson['features']:
-    if feature['properties']['name'] == st.session_state.last_clicked:
-        clicked_region = feature['properties']['name']
-        break
+
+if map_data['last_clicked'] is not None:
+    lat = map_data['last_clicked']['lat']
+    long = map_data['last_clicked']['lng']
+    d = {'geometry': [Point(long, lat)]}
+    gdf = gpd.GeoDataFrame(d, crs="EPSG:4326")
+    location = gpd.sjoin(gdf, regions, how="left", predicate="within")
+    name = location['name'].values[0]
+    if type(name) == str:
+        clicked_region = name
 
 if clicked_region:
     accidents_data_region = accidents_data_extract[accidents_data_extract["name"] == clicked_region]
@@ -149,10 +158,3 @@ if clicked_region:
 else:
     with region_stats.container():
         st.write("Click on a region to view its accident statistics.")
-
-# Update last_clicked in session state
-if map_data['last_clicked'] is not None:
-    st.session_state.last_clicked = map_data['last_clicked']['properties']['name']
-
-# Legend
-colormap.add_to(m)
