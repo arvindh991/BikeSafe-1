@@ -170,7 +170,7 @@ with col2:
     st.image("	https://pbs.twimg.com/media/De69pPpUYAAFMrh?format=jpg&name=900x900", use_column_width=True)
 col1, col2 = st.columns(2)
 with col1:
-    st.image("BikeSafe/media/bike tracks.jpeg", use_column_width=True)
+    st.image("/Users/arvindhraghavan/Desktop/BikeSafeTest/BikeSafe/media/bike tracks.jpeg", use_column_width=True)
 with col2:
     st.markdown("<h2 class='section-title'>Discover Safer Bike Lanes</h2>", unsafe_allow_html=True)
     st.markdown("""
